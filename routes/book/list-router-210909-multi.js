@@ -2,48 +2,43 @@ const path = require('path')
 const moment = require('moment')
 const express = require('express')
 const router = express.Router()
-const createError = require('http-errors')
-const { cutTail, chgStatus, getIcon, relPath } = require('../../modules/util')
+const { error, cutTail, chgStatus, getIcon, relPath } = require('../../modules/util')
 const { pool } = require('../../modules/mysql-init')
 const createPager = require('../../modules/pager-init')
 
 router.get(['/', '/:page'], async (req, res, next) => {
-	req.app.locals.PAGE = 'LIST'
 	let sql, values;
 	try {
-		// console.time('start')
-		sql = "SELECT COUNT(idx) FROM books WHERE status > '0'"
+		sql = "SELECT COUNT(idx) FROM books WHERE status < 3"
 		const [[cnt]] = await pool.execute(sql)
 		const totalRecord = cnt['COUNT(idx)']
 		const page = Number(req.params.page || 1)
 		const pager = createPager(page, totalRecord, 5, 3)
 
-		sql = `
-		SELECT B.*, F.savename AS cover, F2.savename AS icon 
-		FROM books B 
-		LEFT JOIN files F ON B.idx = F.fidx AND F.fieldname = 'C' AND F.status > '0'
-		LEFT JOIN files F2 ON B.idx = F2.fidx AND F2.fieldname = 'U' AND F2.status > '0'
-		WHERE B.status > '0' 
-		ORDER BY B.idx DESC
-		LIMIT ?, ?`
+		sql = "SELECT * FROM books WHERE status < 3 ORDER BY idx DESC LIMIT ?, ?"
 		values = [pager.startIdx.toString(), pager.listCnt.toString()]
 		const [books] = await pool.execute(sql, values)
-		books.forEach(v => {
+		for(let v of books) {
 			v.createdAt = moment(v.createdAt).format('YYYY-MM-DD')
 			v.content = cutTail(v.content)
 			v.writer = v.writer || '미상'
 			v.status = chgStatus(v.status)
-			v.cover = v.cover ? relPath(v.cover) : null
-			v.icon = v.icon ? getIcon(v.icon) : null
-		})
-		
+			sql = "SELECT savename, fieldname FROM files WHERE fidx = " + v.idx
+			let [rs] = await pool.execute(sql)
+			for(let v2 of rs) {
+				if(v2.fieldname === 'C') v.cover = relPath(v2.savename)
+				if(v2.fieldname === 'U') v.icon = getIcon(v2.savename)
+			}
+		}
+		const title = '도서 목록'
+		const description = '등록된 도서들의 리스트 입니다.'
 		const js = 'book/list'
 		const css = 'book/list'
-		// console.timeEnd('start')
-		res.status(200).render('book/list', { js, css, books, pager })
+		
+		res.status(200).render('book/list', { title, description, js, css, books, pager })
 	}
 	catch(err) {
-		next(createError(err))
+		next(error(err))
 	}
 })
 
