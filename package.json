@@ -24,21 +24,21 @@
     },
     "name": "15.sql",
     "version": "1.0.0",
-    "main": "01.app.js",
+    "main": "app.js",
     "scripts": {
         "start": "nodemon 01.app",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/booldook/2021-sc-app-15-sql.git"
+        "url": "git+https://github.com/cndgus1010/2021-sc-app-15-sql.git"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/booldook/2021-sc-app-15-sql/issues"
+        "url": "https://github.com/cndgus1010/2021-sc-app-15-sql/issues"
     },
-    "homepage": "https://github.com/booldook/2021-sc-app-15-sql#readme",
+    "homepage": "https://github.com/cndgus1010/2021-sc-app-15-sql#readme",
     "description": ""
 }
