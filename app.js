@@ -1,12 +1,15 @@
 /************* global require *************/
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const path = require('path')
 const methodInit = require('./modules/method-init')
+const logger = require('./middlewares/morgan-mw')
+const session = require('./middlewares/session-mw')
+const locals = require('./middlewares/locals-mw')
 
 
 /*************** server init **************/
-require('dotenv').config()
 require('./modules/server-init')(app, process.env.PORT)
 
 
@@ -21,11 +24,18 @@ app.locals.tabTitle = 'Express 게시판'
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(methodInit())	// method-override
+app.use(session(app))
+app.use(locals)
+
 
 
 /*************** static init **************/
 app.use('/', express.static(path.join(__dirname, 'public')))
 app.use('/uploads', express.static(path.join(__dirname, 'storages')))
+
+
+/*************** logger init **************/
+app.use(logger)
 
 
 /*************** router init **************/
