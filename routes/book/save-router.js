@@ -1,17 +1,3 @@
-/*
-1. 위의 Query가 INSERT라면 rs = { insertId: 15, affectedRows: 1 ... }
-2. 위의 Query가 UPDATE라면 rs = { affectedRows: 1 ... }
-3. files QUery는 아래와 같다.
-	가. 신규글이라면 아래와 같이 INSERT만 하면 된다.
-	INSERT INTO files SET oriname=?, savename=?, mimetype=?, size=?, fieldname=?, fidx=?
-	- fidx 어디서 ? => rs.insertId
-
-	나. 업데이트라면 일단 k.substr(0, 1).toUpperCase() ? 'C' :'U' 분기하고, 기존레코드가 있는지 체크한 후에 있다면 기존 레코드의 status = '0' 파일도 옮긴다.
-	그리고 가)의 INSERT를 실행한다.
-
-	- idx 어디서 ?	=> SELECT * FROM files WHERE fidx = idx
-	- UPDATE files SET status = '0' WHERE idx=?
-*/
 
 
 
@@ -22,36 +8,35 @@ const { moveFile } = require('../../modules/util')
 const { pool } = require('../../modules/mysql-init')
 const uploader = require('../../middlewares/multer-book-mw')
 const { isUser, isGuest, isMyBook } = require('../../middlewares/auth-mw')
+const { updateBook, createBook } = require('../../models/book')
+const { findBookFile, updateFile, createFile } = require('../../models/file')
 
 
-router.post('/', isUser, isMyBook('body', 'U'), uploader.fields([{name: 'cover'}, {name: 'upfile'}]), async (req, res, next) => {
-	let sql, values
+router.post('/', isUser, uploader.fields([{name: 'cover'}, {name: 'upfile'}]), isMyBook('body', 'U'), async (req, res, next) => {
 	try {
-		const { title, writer, content, _method, idx } = req.body
-		const isUpdate = (_method === 'PUT' && idx)
-		sql = isUpdate ? " UPDATE books " : " INSERT INTO books "
-		sql += " SET fidx=?, title=?, writer=?, content=? "
-		sql += isUpdate ? " WHERE idx = " + idx : ""
-		values = [req.session.user.idx, title, writer, content]
-		const [rs] = await pool.execute(sql, values)
+		let book = { ...req.body, fidx: req.session.user.idx }
+		let isUpdate = book._method === 'PUT' && book.idx
+		const { idx: bookIdx } = isUpdate ? await updateBook(book) : await createBook(book)
 		
 		if(req.files) {
 			let fieldname;
 			for(let [k, [v]] of Object.entries(req.files)) {
 				fieldname = k.substr(0, 1).toUpperCase()
-				if(isUpdate) {
-					sql = " SELECT idx, savename FROM files WHERE fidx=? AND fieldname=? AND status=? "
-					values = [idx, fieldname, '1']
-					let [rsf] = await pool.execute(sql, values)
-					if(rsf.length > 0) {
-						sql = " UPDATE files SET status = '0' WHERE idx= " + rsf[0].idx
-						await pool.execute(sql)
-						await moveFile(rsf[0].savename)
+				if(isUpdate) { // 기존파일 처리
+					let { file } = await findBookFile({ fidx: bookIdx, fieldname, status: '1' })
+					if(file) {
+						await updateFile(file.idx, [['status', '0']])
+						await moveFile(file.savename)
 					}
 				}
-				sql = " INSERT INTO files SET oriname=?, savename=?, mimetype=?, size=?, fieldname=?, fidx=? "
-				values = [v.originalname, v.filename, v.mimetype, v.size, fieldname, (isUpdate ? idx : rs.insertId)]
-				await pool.execute(sql, values)
+				await createFile({
+					oriname: v.originalname,
+					savename: v.filename,
+					mimetype: v.mimetype,
+					size: v.size,
+					fieldname, 
+					fidx: bookIdx 
+				})
 			}
 			res.redirect(`/${req.lang}/book`)
 		}
