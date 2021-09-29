@@ -15,7 +15,18 @@ pool.execute() => SELECT [[{ id: 1...},{ id: 2...},{ id: 3...}],{ field info }]
 const findUser = async (key, value) => {
 	let sql
 	try {
-		sql = ` SELECT * FROM users WHERE ${key} = ? `
+		sql = ` SELECT 
+		U.*, 
+		S.idx AS sidx, 
+		S.provider, 
+		S.snsname, 
+		S.displayName, 
+		S.email AS snsEmail, 
+		S.profileURL, 
+		S.status AS snsStatus 
+		FROM users AS U LEFT JOIN users_sns AS S 
+		ON U.idx = S.fidx 
+		WHERE U.${key} = ? `
 		const [r] = await pool.execute(sql, [value])
 		return { success: true, user: r[0] }
 	}
@@ -36,10 +47,10 @@ const findAllUser = async (order = 'ASC') => {
 	}
 }
 
-const isVerify = async (key, value) => {
+const existUser = async (key, value) => {
 	const sql = ` SELECT * FROM users WHERE ${key} = ? `
 	const [rs] = await pool.execute(sql, [value])
-	return rs.length ? true : false
+	return rs.length ? { success: true, idx: rs[0].idx } : { success: false, idx: null }
 }
 
 const loginUser = async (userid, passwd) => {
@@ -60,4 +71,4 @@ const loginUser = async (userid, passwd) => {
 	}
 }
 
-module.exports = { findUser, findAllUser, isVerify, loginUser }
+module.exports = { findUser, findAllUser, existUser, loginUser }
