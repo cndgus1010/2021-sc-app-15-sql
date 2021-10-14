@@ -19,8 +19,13 @@ const updateKey = async (idx) => {
 
 const updateDomain = async (domain, fidx) => {
 	try {
+		console.log(domain.trim().split('\r\n'))
+		const saveDomain = domain
+			.trim()
+			.split('\r\n')
+			.filter(v => v.trim() === '' ? false : true)
 		let sql = " UPDATE users_api SET domain=? WHERE fidx=? "
-		let [rs] = await pool.execute(sql, [domain, fidx])
+		let [rs] = await pool.execute(sql, [saveDomain.join(','), fidx])
 		return rs.affectedRows === 1
 	}
 	catch(err) {
