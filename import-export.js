@@ -1,5 +1,6 @@
+// 프론트에선 이걸로
 // Common JS - 익명
-// a.js - 내보낼때
+// a.js - 내보낼때 - 파일명이 a.js라면
 module.export = () => {
 
 }
@@ -7,7 +8,7 @@ module.export = () => {
 const 아무이름 = require('a')
 
 // ES6 - 익명
-// a.js - 내보낼때
+// a.js - 내보낼때 - 파일명이 a.js라면
 export default () => {
 
 }
@@ -16,7 +17,7 @@ import 아무이름 from 'a'
 
 
 
-
+// node에서 이걸로
 // Common JS - 객체
 // a.js - 내보낼때
 module.export = { a, b }

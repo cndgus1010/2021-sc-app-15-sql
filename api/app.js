@@ -5,6 +5,8 @@ const app = express()
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 
+// import와 export, require와 module.export 세트
+
 /*************** server init **************/
 require('./modules/server-init')(app, process.env.PORT)
 
