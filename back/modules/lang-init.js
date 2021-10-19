@@ -27,7 +27,7 @@ module.exports = _lang => {
 				GLOBAL: {
 					LOGO					: '도서관리시스템',
 					TAB_TITLE			: 'Express 게시판',
-					NAVI					: ['도서 등록', '도서 리스트', '로그인', '로그아웃', '회원가입', '마이페이지', '회원정보수정', '도서 리스트(VUE)']
+					NAVI					: ['도서 등록', '도서 리스트', '로그인', '로그아웃', '회원가입', '마이페이지', '회원정보수정', '도서 리스트(VUE)', '회원탈퇴']
 				},
 				LIST: {
 					TITLE 				: '도서 목록',
@@ -53,6 +53,10 @@ module.exports = _lang => {
 					TITLE 				: '회원 로그인',
 					DESC 					: '회원님의 로그인 정보를 아래에 입력해 주세요.',
 				},
+				WITHDRAWAL: {
+					TITLE 				: '회원 탈퇴',
+					DESC 					: '회원 탈퇴를 원하시면 아래의 정보를 입력해 주세요.',
+				},
 				FIELD : {
 					NO						: '번호',
 					TITLE					: '제목',
@@ -69,6 +73,7 @@ module.exports = _lang => {
 					PASSWD2				: '패스워드 확인',
 					USERNAME			: '이름',
 					EMAIL					: '이메일',
+					MSG						: '회원 탈퇴 사유',
 				},
 				MYPAGE : {
 					TITLE 				: '회원 정보 수정',
@@ -91,6 +96,7 @@ module.exports = _lang => {
 					RESET					: '다시 등록',
 					JOIN					: '회원 가입',
 					LOGIN					: '회원 로그인',
+					WITHDRAWAL		: '회원 탈퇴',
 					BACK					: '뒤로 가기',
 					APIKEY				: '인증키 생성/변경',
 				},
@@ -124,7 +130,7 @@ module.exports = _lang => {
 				GLOBAL: {
 					LOGO					: 'BOOK MANAGEMENT SYSTEM',
 					TAB_TITLE			: 'Express Board',
-					NAVI: 				['Book Register', 'Book List', 'Login', 'Logout', 'Join', 'Mypage', 'Edit User', 'Book List(VUE)']
+					NAVI: 				['Book Register', 'Book List', 'Login', 'Logout', 'Join', 'Mypage', 'Edit User', 'Book List(VUE)', 'Withdrawal']
 				},
 				LIST: {
 					TITLE 				: 'Book List',
@@ -150,6 +156,10 @@ module.exports = _lang => {
 					TITLE 				: 'Member Login',
 					DESC 					: 'Please enter your login information below.',
 				},
+				WITHDRAWAL: {
+					TITLE 				: 'Withdrawal',
+					DESC 					: 'If you wish to cancel your membership, please enter the information below.',
+				},
 				FIELD : {
 					NO						: 'No',
 					TITLE					: 'Title',
@@ -166,6 +176,7 @@ module.exports = _lang => {
 					PASSWD2				: 'Password confirm',
 					USERNAME			: 'User name',
 					EMAIL					: 'Email',
+					MSG						: 'Reason for withdrawal'
 				},
 				MYPAGE : {
 					TITLE 				: 'User Information Update',
@@ -188,6 +199,7 @@ module.exports = _lang => {
 					RESET					: 'RESET',
 					JOIN					: 'JOIN',
 					LOGIN					: 'LOGIN',
+					WITHDRAWAL		: 'WITHDRAWAL',
 					BACK					: 'BACK',
 					APIKEY				: 'Auth-key create/update',
 				},
