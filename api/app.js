@@ -3,10 +3,13 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const cookieParser = require('cookie-parser')
+const helmet = require('helmet')
 const cors = require('cors')
 
 // import와 export, require와 module.export 세트
 
+/*************** server init **************/
+app.use(helmet({ contentSecurityPolicy: false }))
 /*************** server init **************/
 require('./modules/server-init')(app, process.env.PORT)
 
